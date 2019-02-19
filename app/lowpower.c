@@ -53,7 +53,7 @@ void restart_init()
 	}  
 	if(Count.restart)
 	{
-		Count.restart = FALSE;
+		disableInterrupts();
 		CLK_Config();
 		gpio_inti();
 		lcd_init();
@@ -62,11 +62,12 @@ void restart_init()
 		Check_voltage();
 		show_signal(TRUE);
 		key_gpio_inti();
+		enableInterrupts();
+		Count.restart = FALSE;
 		RunTime.scount = TRUE;
 		Time2.ms = 0;
 		RunTime.power = 0;
 	}
-
 }
 void low_power_key_set()
 {

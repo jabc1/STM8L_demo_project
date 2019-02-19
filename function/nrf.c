@@ -55,7 +55,7 @@ void nrfsend(u8 *pBuf,u8 ch)
     SPI_RW_Reg(WRITE_REG + EN_RXADDR ,SPI1,0x01);//Reserved
     SPI_RW_Reg(WRITE_REG + SETUP_AW,SPI1,0x01);//Send Address width:3u8
     SPI_RW_Reg(WRITE_REG + SETUP_RETR,SPI1,0x5a);//Reserved
-    SPI_RW_Reg(WRITE_REG + RF_SETUP,SPI1,0x0f); //0x26//0x27 // 0dBm, 1Mbps
+    SPI_RW_Reg(WRITE_REG + RF_SETUP,SPI1,0x0f);
     
     SPI_Write_Buf(WRITE_REG + TX_ADDR,SPI1,TX_ADDRESS, TX_ADR_WIDTH);
     SPI_Write_Buf(WRITE_REG + RX_ADDR_P0,SPI1,TX_ADDRESS, TX_ADR_WIDTH);
@@ -63,16 +63,10 @@ void nrfsend(u8 *pBuf,u8 ch)
     SPI_Write_Buf(WR_TX_PLOAD,SPI1,pBuf,0x0f);
     delay_us(100);
     GPIO_L(CE_PORT);
-    SPI_RW_Reg(WRITE_REG + RF_CH,SPI1,ch);	   //RF Channel:2460MHz
+    SPI_RW_Reg(WRITE_REG + RF_CH,SPI1,ch);
     SPI_RW_Reg(WRITE_REG + CONFIG,SPI1,0x0A);// TX Interruption:Enable,CRC16,Power on
     GPIO_H(CE_PORT);
     while(IRQ_STAREREAD !=0);
-}
-void SleepMode()
-{  
-    GPIO_L(CE_PORT);
-    SPI_RW_Reg(WRITE_REG + STATUS,SPI1,0xFF);   
-    SPI_RW_Reg(WRITE_REG + CONFIG,SPI1,0x08);//Power off
 }
 u8 SPI_Read_Reg(SPI_TypeDef* SPIx,u8 reg)
 {
@@ -83,12 +77,21 @@ u8 SPI_Read_Reg(SPI_TypeDef* SPIx,u8 reg)
     GPIO_H(CSN_PORT);
     return value;
 }
+
+void SleepMode()
+{  
+    GPIO_L(CE_PORT);
+    SPI_RW_Reg(WRITE_REG + STATUS,SPI1,0xFF);   
+    SPI_RW_Reg(WRITE_REG + CONFIG,SPI1,0x08);//Power off
+}
+
 void Sleep()
 {
 	SleepMode();
+	Delay_ms(10);
 	SPI_DeInit(SPI1);
 	CLK_PeripheralClockConfig (CLK_Peripheral_SPI1,DISABLE);
-	SPI_Cmd(SPI1, DISABLE);  /* Ê¹ÄÜSPI */
+	SPI_Cmd(SPI1, DISABLE);
 }
 
 

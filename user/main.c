@@ -27,7 +27,6 @@ int main( void )
     disableInterrupts();//关闭系统总终端
     CLK_Config();
     gpio_inti();
-    UsrID_Read(ID_ADD,6);
     lcd_init();
     Init_time2();
     Check_voltage();
@@ -35,6 +34,7 @@ int main( void )
     key_gpio_inti();
     RunTime.scount = TRUE;
     RunTime.power = 0;
+    RunTime.sleep = 300-1;//s
     enableInterrupts();//开启系统总终端
     while(1)
     {

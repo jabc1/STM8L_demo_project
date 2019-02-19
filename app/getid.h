@@ -6,7 +6,7 @@
 #define		ID_ADD  		0xFF30
 
 void user_id(u8 *temp);
-void UsrID_Read(u32 Address,u8 Readlen);
+void get_id(u32 Address,u8 Readlen);
 u8  CheckSum(u8 *uBuff, u8 uBuffLen);
 
 #endif

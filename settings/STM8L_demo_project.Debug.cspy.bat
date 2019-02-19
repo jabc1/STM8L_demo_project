@@ -25,7 +25,7 @@ if not "%~1" == "" goto debugFile
 
 @echo on 
 
-"C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.3\common\bin\cspybat" -f "G:\KK_Project\Answerer\20190214_recode\students_20190218\settings\STM8L_demo_project.Debug.general.xcl" --backend -f "G:\KK_Project\Answerer\20190214_recode\students_20190218\settings\STM8L_demo_project.Debug.driver.xcl" 
+"C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.3\common\bin\cspybat" -f "G:\KK_Project\Answerer\20190214_rebuild\students_20190219\settings\STM8L_demo_project.Debug.general.xcl" --backend -f "G:\KK_Project\Answerer\20190214_rebuild\students_20190219\settings\STM8L_demo_project.Debug.driver.xcl" 
 
 @echo off 
 goto end 
@@ -34,7 +34,7 @@ goto end
 
 @echo on 
 
-"C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.3\common\bin\cspybat" -f "G:\KK_Project\Answerer\20190214_recode\students_20190218\settings\STM8L_demo_project.Debug.general.xcl" "--debug_file=%~1" --backend -f "G:\KK_Project\Answerer\20190214_recode\students_20190218\settings\STM8L_demo_project.Debug.driver.xcl" 
+"C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.3\common\bin\cspybat" -f "G:\KK_Project\Answerer\20190214_rebuild\students_20190219\settings\STM8L_demo_project.Debug.general.xcl" "--debug_file=%~1" --backend -f "G:\KK_Project\Answerer\20190214_rebuild\students_20190219\settings\STM8L_demo_project.Debug.driver.xcl" 
 
 @echo off 
 :end

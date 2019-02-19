@@ -1,7 +1,6 @@
----- lowpower Matches (6 in 5 files) ----
-Key.c (function):#include "lowpower.h"
-Lowpower.c (app):File name  : lowpower.c
-Lowpower.c (app):#include "lowpower.h"
-Main.c (user):#include "lowpower.h"
-Stm8l15x_rtc.c (lib\src):  *           lowpower modes.
-Time.h (sys):	u8 lowpower;//低功耗标志位
+---- RunTime.power Matches (5 in 4 files) ----
+Lowpower.c (app):		RunTime.power = 0;
+Main.c (user):    RunTime.power = 0;
+Show.c (app):	    RunTime.power = 0;
+Show.c (app):	    RunTime.power = 0;
+Time.c (sys):				if(RunTime.power++ >= RunTime.sleep)

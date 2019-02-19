@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=1719913811
+Checksum=-452344905
 [CallStack]
 ShowArgs=0
 [Disassembly]
@@ -19,10 +19,7 @@ LogEnabled=0
 GraphEnabled=0
 ShowTimeLog=1
 [Breakpoints]
-Bp0=_ "STD_CODE" "{$PROJ_DIR$\app\lowpower.c}.131.2" 1 0 0 0 "" 0 ""
-Bp1=_ "STD_CODE" "{$PROJ_DIR$\app\lowpower.c}.159.1" 1 0 0 0 "" 0 ""
-Bp2=_ "STD_CODE" "{$PROJ_DIR$\app\lowpower.c}.182.1" 1 0 0 0 "" 0 ""
-Count=3
+Count=0
 [Log file]
 LoggingEnabled=_ 0
 LogFile=_ ""

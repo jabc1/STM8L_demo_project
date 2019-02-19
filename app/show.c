@@ -12,6 +12,8 @@ Modify Time:
 #include "lcd.h"
 #include "key.h"
 #include "string.h"
+#include "time.h"
+#include "Voltage.h"
 
 void show_function()
 {
@@ -27,6 +29,7 @@ void show_function()
     if((KeyFlag.a1)||(KeyFlag.b1)||(KeyFlag.c1)||(KeyFlag.d1)||(KeyFlag.e1)||(KeyFlag.f1) \
     	||(KeyFlag.x)||(KeyFlag.v))
     {
+	    RunTime.power = 0;
     	show_succ(FALSE);
     	show_fail(FALSE);
     }
@@ -35,7 +38,12 @@ void show_function()
     	KeyFlag.clear = FALSE;
     	show_succ(FALSE);
     	show_fail(FALSE);
-    	memset(&InfoPack.data[0],0,6);
+	    RunTime.power = 0;
+    }
+    if(RunTime.voltage)
+    {
+    	RunTime.voltage = FALSE;
+    	Check_voltage();
     }
 }
 void show_a(u8 flag)

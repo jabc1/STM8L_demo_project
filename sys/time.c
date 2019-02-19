@@ -55,24 +55,27 @@ INTERRUPT_HANDLER(TIM2_UPD_OVF_TRG_BRK_USART2_TX_IRQHandler,19)
 	if (TIM2_GetITStatus(TIM2_IT_Update) != RESET)//
 	{
 		TIM2_ClearITPendingBit(TIM2_IT_Update);
-		
 		if(Time2.ms++ >= 124)
 		{
 			Time2.ms = 0;
-			/*
 			if(Time2.sec++ >= 59)
 			{
 				Time2.sec = 0;
+				/*
 				if(Time2.min++ >= 59)
 				{
 					Time2.min = 0;
 				}
+				*/
 			}
-			*/
+			if(Time2.sec % 5 == 0)
+			{
+				RunTime.voltage = TRUE;
+			}
 			//GPIO_ToggleBits(GPIOF,GPIO_Pin_0);
 			if(RunTime.scount)
 			{
-				if(RunTime.power++ >= 9)
+				if(RunTime.power++ >= RunTime.sleep)
 				{
 					RunTime.lowmode = TRUE;
 				}

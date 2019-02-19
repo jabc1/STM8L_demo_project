@@ -28,7 +28,7 @@ void user_id(u8 *temp)
 }
 
 //用户ID读取，通过外部工具写入
-void UsrID_Read(u32 Address,u8 Readlen)
+void get_id(u32 Address,u8 Readlen)
 {
 	u8 i=0;
 	FLASH_Unlock(FLASH_MemType_Program );
