@@ -1,6 +1,8 @@
----- RunTime.power Matches (5 in 4 files) ----
-Lowpower.c (app):		RunTime.power = 0;
-Main.c (user):    RunTime.power = 0;
-Show.c (app):	    RunTime.power = 0;
-Show.c (app):	    RunTime.power = 0;
-Time.c (sys):				if(RunTime.power++ >= RunTime.sleep)
+---- Receive.init Matches (7 in 3 files) ----
+Key.c (function):		Receive.init = TRUE;
+Key.c (function):	Receive.init = FALSE;
+Key.c (function):		Receive.init = TRUE;
+Lowpower.c (app):	    Receive.init = TRUE;
+Receivemode.c (app):	Receive.init = FALSE;
+Receivemode.c (app):	if(Receive.init)
+Receivemode.c (app):		Receive.init = FALSE;

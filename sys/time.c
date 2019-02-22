@@ -20,21 +20,12 @@ _RUNCOUNT	RunTime;
 
 void Init_time2()
 {
-#if 0
-    TIM2_DeInit();
-    CLK_PeripheralClockConfig(CLK_Peripheral_TIM2,ENABLE);    
-    TIM2_TimeBaseInit(TIM2_Prescaler_16, TIM2_CounterMode_Up, 0x7D);//1ms
-    TIM2_ARRPreloadConfig(ENABLE);  
-    TIM2_ITConfig(TIM2_IT_Update , ENABLE);  
-    TIM2_Cmd(ENABLE);
-#else
-    CLK_PeripheralClockConfig(CLK_Peripheral_TIM2,ENABLE);//将主时钟信号送给定时器4(L系列单片机必需)
-    TIM2_TimeBaseInit(TIM2_Prescaler_16,TIM2_CounterMode_Up,0x7D);//定时器4,将主时钟16分频.自动装载FA=125
-    TIM2_SetCounter(0xFA);                                //设定计数值FA=125
+    CLK_PeripheralClockConfig(CLK_Peripheral_TIM2,ENABLE);
+    TIM2_TimeBaseInit(TIM2_Prescaler_16,TIM2_CounterMode_Up,0x7D);
+    TIM2_SetCounter(0xFA);
     TIM2_ITConfig(TIM2_IT_Update,ENABLE);
     TIM2_ARRPreloadConfig(ENABLE);
-    TIM2_Cmd(ENABLE);                                    //计数器使能，开始计数  
-#endif
+    TIM2_Cmd(ENABLE);
 }
 void time2_del()
 {
@@ -58,22 +49,12 @@ INTERRUPT_HANDLER(TIM2_UPD_OVF_TRG_BRK_USART2_TX_IRQHandler,19)
 		if(Time2.ms++ >= 124)
 		{
 			Time2.ms = 0;
-			if(Time2.sec++ >= 59)
-			{
-				Time2.sec = 0;
-				/*
-				if(Time2.min++ >= 59)
-				{
-					Time2.min = 0;
-				}
-				*/
-			}
-			if(Time2.sec % 5 == 0)
+			if(Time2.sec++ % 5 == 0)
 			{
 				RunTime.voltage = TRUE;
 			}
 			//GPIO_ToggleBits(GPIOF,GPIO_Pin_0);
-			if(RunTime.scount)
+			if(RunTime.lowcount)
 			{
 				if(RunTime.power++ >= RunTime.sleep)
 				{

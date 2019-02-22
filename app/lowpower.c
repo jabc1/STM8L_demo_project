@@ -21,10 +21,30 @@ Modify Time:
 #include "key.h"
 #include "delay.h"
 #include "stm8l15x_adc.h"
+#include "receivemode.h"
 
+void low_power_key_set()
+{
+	GPIO_Init(GPIOA, GPIO_Pin_All,  GPIO_Mode_Out_PP_High_Slow);//降低功耗
+    GPIO_Init(GPIOB, GPIO_Pin_All,  GPIO_Mode_Out_PP_High_Slow);
+    GPIO_Init(GPIOC, GPIO_Pin_All,  GPIO_Mode_Out_PP_High_Slow);
+//    GPIO_Init(GPIOD, GPIO_Pin_All,  GPIO_Mode_Out_PP_High_Slow);
+//    GPIO_Init(GPIOE, GPIO_Pin_All,  GPIO_Mode_Out_PP_High_Slow);
+//    GPIO_Init(GPIOF, GPIO_Pin_All,  GPIO_Mode_Out_PP_High_Slow);
+//    GPIO_Init(GPIOG, GPIO_Pin_All,  GPIO_Mode_Out_PP_High_Slow);
+    GPIO_Init(GPIOD, GPIO_Pin_4,GPIO_Mode_Out_PP_Low_Slow);//1行
+    GPIO_Init(GPIOD, GPIO_Pin_7,GPIO_Mode_Out_PP_Low_Slow);//2行
+    GPIO_Init(GPIOD, GPIO_Pin_6,GPIO_Mode_Out_PP_Low_Slow);//3行
+    GPIO_Init(GPIOD, GPIO_Pin_5,GPIO_Mode_Out_PP_Low_Slow);//4行 
+    GPIO_Init(GPIOC, GPIO_Pin_0, GPIO_Mode_In_PU_IT);//1列
+    GPIO_Init(GPIOC, GPIO_Pin_1, GPIO_Mode_In_PU_IT);//2列
+    GPIO_Init(GPIOC, GPIO_Pin_2, GPIO_Mode_In_PU_IT);//3列
+    GPIO_Init(GPIOC, GPIO_Pin_3, GPIO_Mode_In_PU_IT);//4列
+}
 void lowpower_function()
 {
 	LCD_Clear();
+	low_power_key_set();
 	Adc_del();
 	time2_del();
 	LCD_DeInit();		
@@ -37,7 +57,6 @@ void lowpower_function()
 	CLK_DeInit();
 	CLK_HSICmd(DISABLE);
 	CLK_LSICmd(DISABLE);
-	low_power_key_set();
 	CLK_HaltConfig(CLK_Halt_FastWakeup,ENABLE);   
 	PWR_FastWakeUpCmd(ENABLE);				 
 	CLK_HSICmd(DISABLE);						  
@@ -51,7 +70,7 @@ void restart_init()
       	RunTime.lowmode= FALSE;
 		lowpower_function();
 	}  
-	if(Count.restart)
+	if(Run.restart)
 	{
 		disableInterrupts();
 		CLK_Config();
@@ -63,34 +82,15 @@ void restart_init()
 		show_signal(TRUE);
 		key_gpio_inti();
 		enableInterrupts();
-		Count.restart = FALSE;
-		RunTime.scount = TRUE;
+		Run.restart = FALSE;
+		RunTime.lowcount = TRUE;
 		Time2.ms = 0;
 		RunTime.power = 0;
+	    Run.key = TRUE;
+	    Receive.init = TRUE;
 	}
 }
-void low_power_key_set()
-{
-	GPIO_Init(GPIOA, GPIO_Pin_All,  GPIO_Mode_Out_PP_High_Slow);//降低功耗
-    GPIO_Init(GPIOB, GPIO_Pin_All,  GPIO_Mode_Out_PP_High_Slow);
-    GPIO_Init(GPIOC, GPIO_Pin_All,  GPIO_Mode_Out_PP_High_Slow);
-//    GPIO_Init(GPIOD, GPIO_Pin_All,  GPIO_Mode_Out_PP_High_Slow);
-//    GPIO_Init(GPIOE, GPIO_Pin_All,  GPIO_Mode_Out_PP_High_Slow);
-//    GPIO_Init(GPIOF, GPIO_Pin_All,  GPIO_Mode_Out_PP_High_Slow);
-//    GPIO_Init(GPIOG, GPIO_Pin_All,  GPIO_Mode_Out_PP_High_Slow);
 
-    GPIO_Init(GPIOD, GPIO_Pin_4,GPIO_Mode_Out_PP_Low_Slow);//1行
-    GPIO_Init(GPIOD, GPIO_Pin_7,GPIO_Mode_Out_PP_Low_Slow);//2行
-    GPIO_Init(GPIOD, GPIO_Pin_6,GPIO_Mode_Out_PP_Low_Slow);//3行
-    GPIO_Init(GPIOD, GPIO_Pin_5,GPIO_Mode_Out_PP_Low_Slow);//4行 
-    GPIO_Init(GPIOC, GPIO_Pin_0, GPIO_Mode_In_PU_IT);//1列
-    GPIO_Init(GPIOC, GPIO_Pin_1, GPIO_Mode_In_PU_IT);//2列
-    GPIO_Init(GPIOC, GPIO_Pin_2, GPIO_Mode_In_PU_IT);//3列
-    GPIO_Init(GPIOC, GPIO_Pin_3, GPIO_Mode_In_PU_IT);//4列
-    
-
-
-}
 /**
   * @brief External IT PIN0 Interrupt routine.
   * @param  None
@@ -102,7 +102,7 @@ INTERRUPT_HANDLER(EXTI0_IRQHandler,8)
        it is recommended to set a breakpoint on the following instruction.
     */
     EXTI_ClearITPendingBit(EXTI_IT_Pin0);
-   	Count.restart = TRUE;
+   	Run.restart = TRUE;
 }
 
 /**
@@ -116,7 +116,7 @@ INTERRUPT_HANDLER(EXTI1_IRQHandler,9)
        it is recommended to set a breakpoint on the following instruction.
     */
 	EXTI_ClearITPendingBit(EXTI_IT_Pin1);
-	Count.restart = TRUE;
+	Run.restart = TRUE;
 }
 
 /**
@@ -130,7 +130,7 @@ INTERRUPT_HANDLER(EXTI2_IRQHandler,10)
        it is recommended to set a breakpoint on the following instruction.
     */
 	EXTI_ClearITPendingBit(EXTI_IT_Pin2);
-	Count.restart = TRUE;
+	Run.restart = TRUE;
 }
 
 /**
@@ -144,7 +144,7 @@ INTERRUPT_HANDLER(EXTI3_IRQHandler,11)
        it is recommended to set a breakpoint on the following instruction.
     */
 	EXTI_ClearITPendingBit(EXTI_IT_Pin3);
-	Count.restart = TRUE;
+	Run.restart = TRUE;
 }
 
 /**

@@ -12,9 +12,10 @@ Modify Time:
 #include "nrf.h"
 #include "gpio.h"
 #include "delay.h"
+#include "key.h"
 
 u8 TX_ADDRESS[5]  =  {0xD2,0x52,0x6E,0x10,0x01};
-u8 RX_ADDRESS[5] =   {0x34,0x43,0x10,0x10,0x01};
+u8 RX_ADDRESS[5] =   {0xD2,0x52,0x6E,0x10,0x01};
 //spi总线初始化
 void SPI24r1_Init(void)
 {
@@ -31,7 +32,7 @@ u8  SPI_Write_Buf(u8 reg, SPI_TypeDef* SPIx,u8 *pBuf, u8 u8s)
     u8  status,u8_ctr;
     GPIO_L(CSN_PORT);  
     status=SPI_SendByte(SPIx,reg);
-    for(u8_ctr=0; u8_ctr<u8s; u8_ctr++) // then write all u8 in buffer(*pBuf)
+    for(u8_ctr=0; u8_ctr<u8s; u8_ctr++) 
     {
     	SPI_SendByte(SPIx,*pBuf++);
     }
@@ -48,23 +49,23 @@ u8  SPI_RW_Reg(u8 reg,SPI_TypeDef* SPIx, u8 value)
     return status;
 }
 void nrfsend(u8 *pBuf,u8 ch)
-{  
+{
     GPIO_L(CE_PORT);
-    SPI_RW_Reg(WRITE_REG + CONFIG,SPI1, 0x08);     //CRC16
+    SPI_RW_Reg(WRITE_REG + CONFIG,SPI1, 0x0A);     //CRC16
     SPI_RW_Reg(WRITE_REG + EN_AA ,SPI1,0x01);//Compatible Nodic:0x00
     SPI_RW_Reg(WRITE_REG + EN_RXADDR ,SPI1,0x01);//Reserved
     SPI_RW_Reg(WRITE_REG + SETUP_AW,SPI1,0x01);//Send Address width:3u8
-    SPI_RW_Reg(WRITE_REG + SETUP_RETR,SPI1,0x5a);//Reserved
+    SPI_RW_Reg(WRITE_REG + SETUP_RETR,SPI1,0x65);//Reserved
     SPI_RW_Reg(WRITE_REG + RF_SETUP,SPI1,0x0f);
     
     SPI_Write_Buf(WRITE_REG + TX_ADDR,SPI1,TX_ADDRESS, TX_ADR_WIDTH);
-    SPI_Write_Buf(WRITE_REG + RX_ADDR_P0,SPI1,TX_ADDRESS, TX_ADR_WIDTH);
-    SPI_RW_Reg(WRITE_REG + STATUS,SPI1,0xFF);
-    SPI_Write_Buf(WR_TX_PLOAD,SPI1,pBuf,0x0f);
-    delay_us(100);
-    GPIO_L(CE_PORT);
+    SPI_Write_Buf(WRITE_REG + RX_ADDR_P0,SPI1,RX_ADDRESS, TX_ADR_WIDTH);
     SPI_RW_Reg(WRITE_REG + RF_CH,SPI1,ch);
-    SPI_RW_Reg(WRITE_REG + CONFIG,SPI1,0x0A);// TX Interruption:Enable,CRC16,Power on
+    SPI_RW_Reg(WRITE_REG + STATUS,SPI1,0xFF);
+    SPI_Write_Buf(WR_TX_PLOAD,SPI1,pBuf,DATA_LEN);
+//    GPIO_L(CE_PORT);
+//    SPI_RW_Reg(WRITE_REG + RF_CH,SPI1,ch);
+//    SPI_RW_Reg(WRITE_REG + CONFIG,SPI1,0x0A);// TX Interruption:Enable,CRC16,Power on
     GPIO_H(CE_PORT);
     while(IRQ_STAREREAD !=0);
 }
@@ -88,10 +89,11 @@ void SleepMode()
 void Sleep()
 {
 	SleepMode();
-	Delay_ms(10);
+	/*
 	SPI_DeInit(SPI1);
 	CLK_PeripheralClockConfig (CLK_Peripheral_SPI1,DISABLE);
 	SPI_Cmd(SPI1, DISABLE);
+	*/
 }
 
 

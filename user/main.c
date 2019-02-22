@@ -21,7 +21,17 @@ Modify Time:
 #include "key.h"
 #include "lowpower.h"
 #include "delay.h"
+#include "receivemode.h"
 
+void variable_inti(void);
+void variable_inti()
+{
+    RunTime.lowcount = TRUE;
+    RunTime.power = 0;
+    RunTime.sleep = 300-1;//s
+    Run.key = TRUE;
+    Run.FREquency = FALSE;//默认不调频
+}
 int main( void )
 {
     disableInterrupts();//关闭系统总终端
@@ -29,13 +39,14 @@ int main( void )
     gpio_inti();
     lcd_init();
     Init_time2();
-    Check_voltage();
+    Adc_Init();
     show_signal(TRUE);
     key_gpio_inti();
-    RunTime.scount = TRUE;
-    RunTime.power = 0;
-    RunTime.sleep = 300-1;//s
-    enableInterrupts();//开启系统总终端
+	Check_voltage();
+	variable_inti();
+	receive_init();
+	nrf_receive_mode(10,15);
+	enableInterrupts();//开启系统总终端
     while(1)
     {
         key_function();
@@ -43,6 +54,7 @@ int main( void )
         send_function();
         restart_init();
         resend_function();
+        receive_function();
     }
 }
 

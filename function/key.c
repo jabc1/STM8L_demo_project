@@ -16,10 +16,11 @@ Modify Time:
 #include "time.h"
 #include "lowpower.h"
 #include "show.h"
+#include "receivemode.h"
 
 _KEY	KeyFlag;
 _INFO	InfoPack;
-_COUNT	Count;
+_COUNT	Run;
 
 void key_gpio_inti()
 {
@@ -42,19 +43,21 @@ void key_gpio_inti()
 
 void key_function()
 {
-	scanf_row1_key();
-	scanf_row2_key();
-	scanf_row3_key();
+	if(Run.key)
+	{
+		scanf_row1_key();
+		scanf_row2_key();
+		scanf_row3_key();
+	}
 }
 
 void send_function()
 {
-	if((KeyFlag.head)||((KeyFlag.send)&&(InfoPack.data[0] != NULL)))
+	if( KeyFlag.head ||(KeyFlag.send &&(InfoPack.data[0] != NULL) ) )
 	{
-		show_send(TRUE);
+		show_sendfalg(TRUE);
 		show_succ(FALSE);
 		show_fail(FALSE);
-		Delay_ms(30+InfoPack.id[4]);//显示发送标志
 	}
 	if(KeyFlag.head)//head
 	{
@@ -64,10 +67,9 @@ void send_function()
 		get_id(ID_ADD,5);
 		InfoPack.flag = 0x10;
 		InfoPack.cmd = 'H';
-		InfoPack.cmdtype = 0x00;
-		//InfoPack.data[0] = 'H';
-		InfoPack.crc = CheckSum((u8 *)(&InfoPack),14);
-		pack((u8 *)&InfoPack,10);
+		InfoPack.cmdtype = 0x00;//这三个变量好坑人啊，增加软件冗余
+		InfoPack.crc = checksum((u8 *)(&InfoPack),DATA_LEN-1);
+		unpack((u8 *)&InfoPack);
 	}
 	if(KeyFlag.send)//send
 	{
@@ -87,8 +89,8 @@ void send_function()
 		get_id(ID_ADD,5);
 		InfoPack.flag = 0x10;//这个也可以不用
 		InfoPack.cmd = 0x00;//这个也没有必要
-		InfoPack.crc = CheckSum((u8 *)(&InfoPack),14);
-		pack((u8 *)&InfoPack,10);
+		InfoPack.crc = checksum((u8 *)(&InfoPack),DATA_LEN-1);
+		unpack((u8 *)&InfoPack);
 	}
 }
 void clear_xv()
@@ -96,53 +98,109 @@ void clear_xv()
 	KeyFlag.x = FALSE;
 	KeyFlag.v = FALSE;
 }
-//带返回值主要是为了以后维护方便
+//带返回值主要是为了以后维护方便，至于变量说明详情见结构体定义说明
 u8 resend_function()
 {
-	if(Count.resend == TRUE)
+	if(Run.resend == TRUE)
 	{
-		Count.resend = FALSE;
-		pack((u8 *)&InfoPack,10);
-		if(Count.sendnum++ >= 3)//send fail
+		Run.resend = FALSE;
+		unpack((u8 *)&InfoPack);
+		if(Run.resendnum++ >= MAX_SEND_NUM)//send fail
 		{
-			Count.sendnum = 0;
-			Count.resend = FALSE;
-			Count.noack = TRUE;
+			Run.noack = TRUE;
+			Run.resend = FALSE;//Send infomation fail
 		}
 	}
-	if(Count.noack)//show fail flag
+	if(Run.noack)//show fail flag
 	{
 		Sleep();
-		Count.noack = FALSE;//clear send data. please restrat input
-		Count.num = 0;
-		memset((u8 *)&InfoPack,0,sizeof(InfoPack));
+		Run.noack = FALSE;//clear send data. please restrat input
+		Run.key = TRUE;
+		Run.num = 0;
+		Run.resendnum = 0;//重新统计
+		memset(&InfoPack.data[0],0,6);
 		memset(&KeyFlag,0,8);
-		show_send(FALSE);
-		show_fail(TRUE);
+		if((Run.ack >= 1)&&(Run.resendnum >= MAX_SEND_NUM))//收到一次数据时
+		{
+			show_succ(TRUE);
+			show_sendfalg(FALSE);
+			Run.ack = 0;
+			return TRUE;
+		}
+		else
+		{
+			show_sendfalg(FALSE);
+			show_fail(TRUE);
+		}
 	}
 	return TRUE;
 }
-u8 pack(u8 *data,u8 ch)
+u8 unpack(u8 *data)
 {
+	Run.key = FALSE;
+	Receive.init = FALSE;
+	Receive.mode = FALSE;
+	delay_us(1+InfoPack.id[4]);//显示发送标志
+	//if(Run.FREquency)
+	if(0)//使用单通道不进行调频
+	{
+		Run.rfflag = !Run.rfflag;
+		(Run.rfflag == TRUE) ? (Run.rfch = 10) : (Run.rfch = 50);
+	}
+	else
+	{
+		Run.rfch = 10 ;
+	}
 	SPI24r1_Init();
-	nrfsend(data,ch);
+	nrfsend(data,Run.rfch);
 	check_ack();
+	return TRUE;
+}
+u8 check_num(u8 num)
+{
+	if(++Run.ack >= num)//send succ
+	{
+		Run.ack = 0; 
+	}
+	else
+	{
+		Run.resend = TRUE;
+		return FALSE;
+	}
 	return TRUE;
 }
 u8 check_ack()
 {
 	if(check())//显示ok标志，并取消发送标志，clear send data
 	{
+		//if(Run.FREquency)//跳频
+		if(0)
+		{
+			if(!check_num(RE_SEND_NUM-1))
+			{
+				return FALSE;
+			}
+		}
+		else
+		{
+			if(!check_num(RE_SEND_NUM))
+			{
+				return FALSE;
+			}
+		}
 		Sleep();//nrf sleep mode
 		show_succ(TRUE);
-		show_send(FALSE);
-		Count.num = 0;
-		memset((u8 *)&InfoPack,0,sizeof(InfoPack));
-		memset(&KeyFlag,0,8);		
+		show_sendfalg(FALSE);
+		Run.key = TRUE;
+		Run.num = 0;
+		Run.resendnum = 0;//clear resendnum
+		memset(&InfoPack.data[0],0,6);
+		memset(&KeyFlag,0,8);
+		return TRUE;
 	}
 	else//重新发送一次
 	{
-		Count.resend = TRUE;
+		Run.resend = TRUE;
 	}
 	return TRUE;
 }
@@ -172,7 +230,8 @@ u8 check_data(u8 *dest,u8 data,u8 len)
 //按键消抖时间差不多是8ms
 u8 scanf_row1_key()
 {
-	u8 key_status=0;
+	u8 key_status = 0;
+	u8 long_key = 0,i = 0;
 	//第一行设置为低，然后读取列中是否有低的
 	GPIO_ResetBits(GPIOC,GPIO_Pin_0);
 	GPIO_SetBits(GPIOC,GPIO_Pin_1);
@@ -183,6 +242,17 @@ u8 scanf_row1_key()
 	{
 		delay_200us(40);//使用软件软件延时进行小豆，赶时间，要使用复杂小豆自行添加
 		key_status = GPIO_ReadInputData(GPIOD);
+ 		while(GPIO_ReadInputData(GPIOD) == 0xE0)
+		{
+			if(long_key++ >= 125)
+			{
+				Run.FREquency = ! Run.FREquency;
+				key_status = 0xaa;
+				break;
+			}
+			Delay_ms(2);
+		}
+		long_key = 0;
 		while((GPIO_ReadInputData(GPIOD))!=0xf0);//案件抬起
 		switch(key_status)
 		{
@@ -193,22 +263,36 @@ u8 scanf_row1_key()
 				KeyFlag.c1 = TRUE;
 				if(check_data(&InfoPack.data[0],'C',6))
 				{
-					InfoPack.data[Count.num++] = 'C';
+					InfoPack.data[Run.num++] = 'C';
 				}
 				break;
 			case 0xd0://f
 				KeyFlag.f1 = TRUE;
 				if(check_data(&InfoPack.data[0],'F',6))
 				{
-					InfoPack.data[Count.num++] = 'F';
+					InfoPack.data[Run.num++] = 'F';
 				}
 				break;
 			case 0xe0://x
 				memset(&KeyFlag,0,8);
-				memset((u8 *)&InfoPack,0,sizeof(InfoPack));
-				Count.num = 0 ;
-				InfoPack.data[Count.num] = 'X';
+				memset(&InfoPack.data[0],0,6);
+				Run.num = 0 ;
+				InfoPack.data[Run.num] = 'X';
 				KeyFlag.x = TRUE;
+				break;
+			case 0xaa:
+				for(i=1;i<=6;i++)
+				{
+					if(Run.FREquency)
+					{
+						show_x(i&0x01);
+					}
+					else
+					{
+						show_v(i&0x01);
+					}
+					Delay_ms(80);
+				}
 				break;
 		}
 		if((key_status == 0xb0)||(key_status == 0xd0))
@@ -252,20 +336,20 @@ u8 scanf_row2_key()
 				KeyFlag.b1 = TRUE;
 				if(check_data(&InfoPack.data[0],'B',6))
 				{
-					InfoPack.data[Count.num++] = 'B';
+					InfoPack.data[Run.num++] = 'B';
 				}
 				break;
 			case 0xd0://e
 				KeyFlag.e1 = TRUE;
 				if(check_data(&InfoPack.data[0],'E',6))
 				{
-					InfoPack.data[Count.num++] = 'E';
+					InfoPack.data[Run.num++] = 'E';
 				}
 				break;
 			case 0xe0://clear
 				memset(&KeyFlag,0,sizeof(KeyFlag));
-				memset((u8 *)&InfoPack,0,sizeof(InfoPack));
-				Count.num = 0;
+				memset(&InfoPack.data[0],0,6);
+				Run.num = 0;
 				KeyFlag.clear = TRUE;			
 				break;
 		}
@@ -300,21 +384,21 @@ u8 scanf_row3_key()
 				KeyFlag.a1 = TRUE;
 				if(check_data(&InfoPack.data[0],'A',6))
 				{
-					InfoPack.data[Count.num++] = 'A';
+					InfoPack.data[Run.num++] = 'A';
 				}
 				break;
 			case 0xd0://d
 				KeyFlag.d1 = TRUE;
 				if(check_data(&InfoPack.data[0],'D',6))
 				{
-					InfoPack.data[Count.num++] = 'D';
+					InfoPack.data[Run.num++] = 'D';
 				}
 				break;
 			case 0xe0://v
 				memset(&KeyFlag,0,8);
-				memset((u8 *)&InfoPack,0,sizeof(InfoPack));
-				Count.num = 0 ;
-				InfoPack.data[Count.num] = '/';
+				memset(&InfoPack.data[0],0,6);
+				Run.num = 0 ;
+				InfoPack.data[Run.num] = '/';
 				KeyFlag.v = TRUE;
 				break;
 		}

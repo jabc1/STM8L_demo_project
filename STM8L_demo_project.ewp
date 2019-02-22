@@ -1607,6 +1607,12 @@
       <name>$PROJ_DIR$\app\lowpower.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\app\receivemode.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\app\receivemode.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\app\show.c</name>
     </file>
     <file>

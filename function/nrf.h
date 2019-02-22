@@ -47,9 +47,12 @@
 
 #define TX_ADR_WIDTH		3
 
+extern u8 TX_ADDRESS[5];
+extern u8 RX_ADDRESS[5];
+
 u8 SPI_RW_Reg(u8 reg,SPI_TypeDef* SPIx, u8 value);
 u8 SPI_Read_Reg(SPI_TypeDef* SPIx,u8 reg);
-
+u8  SPI_Write_Buf(u8 reg, SPI_TypeDef* SPIx,u8 *pBuf, u8 u8s);
 void nrfsend(u8 *pBuf,u8 ch);
 void SPI24r1_Init(void);
 void SleepMode(void);

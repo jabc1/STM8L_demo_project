@@ -12,7 +12,7 @@ void CLK_Config(void)
 	{	} 
 	CLK_HSICmd(ENABLE);
 	CLK_HSEConfig(CLK_HSE_OFF);
-	CLK_LSEConfig(CLK_HSE_OFF);
+	CLK_LSEConfig(CLK_LSE_OFF);
 	PWR_FastWakeUpCmd(ENABLE);  //快速唤醒使能
 	PWR_UltraLowPowerCmd(ENABLE);
 }

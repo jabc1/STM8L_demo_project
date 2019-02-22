@@ -12,10 +12,10 @@ Modify Time:
 #include "delay.h"
 void SI24r1_Gpioinit()
 {
-	GPIO_Init(CE_PORT, CE_PORT_PIN, GPIO_Mode_Out_PP_Low_Fast);//ce 
-	GPIO_Init(CSN_PORT,CSN_PORT_PIN, GPIO_Mode_Out_PP_Low_Fast);//cs
-	GPIO_Init(SCK_PORT,SCK_PORT_PIN , GPIO_Mode_Out_PP_Low_Fast);//sck
-	GPIO_Init(MOSI_PORT,MOSI_PORT_PIN, GPIO_Mode_Out_PP_Low_Fast);//MOSI
+	GPIO_Init(CE_PORT, CE_PORT_PIN, GPIO_Mode_Out_PP_High_Fast);//ce 
+	GPIO_Init(CSN_PORT,CSN_PORT_PIN, GPIO_Mode_Out_PP_High_Fast);//cs
+	GPIO_Init(SCK_PORT,SCK_PORT_PIN , GPIO_Mode_Out_PP_High_Fast);//sck
+	GPIO_Init(MOSI_PORT,MOSI_PORT_PIN, GPIO_Mode_Out_PP_High_Fast);//MOSI
 	GPIO_Init(MISO_PORT,MISO_PORT_PIN, GPIO_Mode_In_FL_No_IT);//MISO
 	GPIO_Init(IRQ_PORT, IQR_PORT_PIN, GPIO_Mode_In_FL_No_IT); //IRQ
 }

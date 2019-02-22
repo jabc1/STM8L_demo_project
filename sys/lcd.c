@@ -33,7 +33,7 @@ void lcd_init()
     CLK_PeripheralClockConfig(CLK_Peripheral_LCD, ENABLE);
     CLK_RTCClockConfig(CLK_RTCCLKSource_LSI, CLK_RTCCLKDiv_1);
     LCD_Init(LCD_Prescaler_1, LCD_Divider_31, LCD_Duty_1_4, 
-    				 LCD_Bias_1_3,   LCD_VoltageSource_External);
+    		 LCD_Bias_1_3,   LCD_VoltageSource_External);
     LCD_PortMaskConfig(LCD_PortMaskRegister_0, 0xFF);
     LCD_PortMaskConfig(LCD_PortMaskRegister_1, 0x7F);
     //  LCD_ContrastConfig(LCD_Contrast_Level_0);

@@ -11,7 +11,7 @@ void show_e(u8 flag);
 void show_f(u8 flag);
 void show_succ(u8 flag);
 void show_fail(u8 flag);
-void show_send(u8 flag);
+void show_sendfalg(u8 flag);
 void show_signal(u8 flag);
 void show_x(u8 flag);
 void show_v(u8 flag);

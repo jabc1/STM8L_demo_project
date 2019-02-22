@@ -25,7 +25,6 @@ void show_function()
     show_d(KeyFlag.d1);
     show_e(KeyFlag.e1);
     show_f(KeyFlag.f1);
-    
     if((KeyFlag.a1)||(KeyFlag.b1)||(KeyFlag.c1)||(KeyFlag.d1)||(KeyFlag.e1)||(KeyFlag.f1) \
     	||(KeyFlag.x)||(KeyFlag.v))
     {
@@ -40,7 +39,7 @@ void show_function()
     	show_fail(FALSE);
 	    RunTime.power = 0;
     }
-    if(RunTime.voltage)
+    if((RunTime.voltage)&&(Run.key))
     {
     	RunTime.voltage = FALSE;
     	Check_voltage();
@@ -48,139 +47,54 @@ void show_function()
 }
 void show_a(u8 flag)
 {
-    if(flag)
-    {
-        LCD->RAM[LCD_RAMRegister_1] |= (1<<2);
-    }
-    else
-    {
-        LCD->RAM[LCD_RAMRegister_1] &=~(1<<2);
-    }
+	(flag == TRUE) ? (LCD->RAM[LCD_RAMRegister_1] |= (1<<2)) : (LCD->RAM[LCD_RAMRegister_1] &=~(1<<2));
 }
 void show_b(u8 flag)
 {
-    if(flag)
-    {
-        LCD->RAM[LCD_RAMRegister_4] |= (1<<6);
-    }
-    else
-    {
-        LCD->RAM[LCD_RAMRegister_4] &=~(1<<6);
-    }
+	(flag == TRUE) ? (LCD->RAM[LCD_RAMRegister_4] |= (1<<6)) : (LCD->RAM[LCD_RAMRegister_4] &=~(1<<6));
 }
 void show_c(u8 flag)
 {
-    if(flag)
-    {
-      LCD->RAM[LCD_RAMRegister_8] |= (1<<2);
-    }
-    else
-    {
-      LCD->RAM[LCD_RAMRegister_8] &=~(1<<2);
-    }
+	(flag == TRUE) ? (LCD->RAM[LCD_RAMRegister_8] |= (1<<2)) : (LCD->RAM[LCD_RAMRegister_8] &=~(1<<2));
 }
 void show_d(u8 flag)
 {
-	if(flag)
-	{
-		LCD->RAM[LCD_RAMRegister_11] |= (1<<6);
-	}
-	else
-	{
-		LCD->RAM[LCD_RAMRegister_11] &=~(1<<6);
-	}
+	(flag == TRUE) ? (LCD->RAM[LCD_RAMRegister_11] |= (1<<6)) : (LCD->RAM[LCD_RAMRegister_11] &=~(1<<6));
 }
 void show_e(u8 flag)
 {
-	if(flag)
-	{
-		LCD->RAM[LCD_RAMRegister_1] |= (1<<3);
-	}
-	else
-	{
-		LCD->RAM[LCD_RAMRegister_1] &=~(1<<3);
-	}
+	(flag == TRUE) ? (LCD->RAM[LCD_RAMRegister_1] |= (1<<3)) : (LCD->RAM[LCD_RAMRegister_1] &=~(1<<3));
 }
 void show_f(u8 flag)
 {
-	if(flag)
-	{
-		LCD->RAM[LCD_RAMRegister_4] |= (1<<7);
-	}
-	else
-	{
-		LCD->RAM[LCD_RAMRegister_4] &=~(1<<7);
-	}
+	(flag == TRUE) ? (LCD->RAM[LCD_RAMRegister_4] |= (1<<7)) : (LCD->RAM[LCD_RAMRegister_4] &=~(1<<7));
 }
 void show_v(u8 flag)
 {
-	if(flag)
-	{
-		LCD->RAM[LCD_RAMRegister_12] |= (1<<1);
-	}
-	else
-	{
-		LCD->RAM[LCD_RAMRegister_12] &=~(1<<1);
-	}
+	(flag == TRUE) ? (LCD->RAM[LCD_RAMRegister_12] |= (1<<1)) : (LCD->RAM[LCD_RAMRegister_12] &=~(1<<1));
 }
 void show_x(u8 flag)
 {
-	if(flag)
-	{
-		LCD->RAM[LCD_RAMRegister_8] |= (1<<5);
-	}
-	else
-	{
-		LCD->RAM[LCD_RAMRegister_8] &=~(1<<5);
-	}
+	(flag == TRUE) ? (LCD->RAM[LCD_RAMRegister_8] |= (1<<5)) : (LCD->RAM[LCD_RAMRegister_8] &=~(1<<5));
 }
 
 void show_succ(u8 flag)
 {
-  	if(flag)
-	{
-		LCD->RAM[LCD_RAMRegister_8] |= (1<<6);
-	}
-	else
-	{
-		LCD->RAM[LCD_RAMRegister_8] &=~(1<<6);
-	}
+	(flag == TRUE) ? (LCD->RAM[LCD_RAMRegister_8] |= (1<<6)) : (LCD->RAM[LCD_RAMRegister_8] &=~(1<<6));
 }
 
 void show_fail(u8 flag)
 {
-  	if(flag)
-	{
-		LCD->RAM[LCD_RAMRegister_12] |= (1<<2); 
-	}
-	else
-	{
-		LCD->RAM[LCD_RAMRegister_12] &=~(1<<2); 
-	}
+	(flag == TRUE) ? (LCD->RAM[LCD_RAMRegister_12] |= (1<<2)) : (LCD->RAM[LCD_RAMRegister_12] &=~(1<<2));
 }
 
-void show_send(u8 flag)
+void show_sendfalg(u8 flag)
 {
-  	if(flag)
-	{
-		LCD->RAM[LCD_RAMRegister_5] |= (1<<2);
-	}
-	else
-	{
-		LCD->RAM[LCD_RAMRegister_5] &=~(1<<2);
-	}
+	(flag == TRUE) ? (LCD->RAM[LCD_RAMRegister_5] |= (1<<2)) : (LCD->RAM[LCD_RAMRegister_5] &=~(1<<2));
 }
 void show_signal(u8 flag)
 {
-  	if(flag)
-	{
-		LCD->RAM[LCD_RAMRegister_1] |= (1<<6);
-	}
-	else
-	{
-		LCD->RAM[LCD_RAMRegister_1] &=~(1<<6);
-	}
-
+	(flag == TRUE) ? (LCD->RAM[LCD_RAMRegister_1] |= (1<<6)) : (LCD->RAM[LCD_RAMRegister_1] &=~(1<<6));
 }
 
 

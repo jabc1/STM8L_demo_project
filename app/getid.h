@@ -7,7 +7,7 @@
 
 void user_id(u8 *temp);
 void get_id(u32 Address,u8 Readlen);
-u8  CheckSum(u8 *uBuff, u8 uBuffLen);
+u8  checksum(u8 *uBuff, u8 uBuffLen);
 
 #endif
 
